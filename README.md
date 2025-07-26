@@ -99,10 +99,3 @@ Cette application vise à devenir **un compagnon écologique du quotidien**, com
 | Adoption faible                     | Moyen  | Gamification + partenariats locaux       |
 | RGPD et vie privée                  | Élevé  | Stockage minimal, consentement explicite |
 | Maintenance contenu DIY             | Moyen  | Intégration wiki communautaire           |
-
-
-1. **👉 Backlog Agile complet (user stories détaillées)**
-2. **👉 Schéma visuel d’architecture + flux utilisateur**
-3. **👉 Wireframe des principales pages (MVP)**
-
-👉 Dis-moi par quoi on continue !
