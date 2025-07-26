@@ -1,0 +1,308 @@
+/*
+  Make It Green – Style Sheet
+  Palette inspired by nature for a soft, accessible interface.
+*/
+:root {
+  --primary: #4caf82; /* Vert Sauge */
+  --primary-light: #A8E6A3; /* Vert Menthe Clair */
+  --background: #fafaf7; /* Blanc Cassé */
+  --text: #5d4037; /* Brun Terre */
+  --info: #4da6ff; /* Bleu clair */
+  --accent: #ffd54f; /* Jaune doux */
+  --radius: 12px;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --font-title: 'Poppins', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: white;
+  padding: 1rem 2rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header h1 {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 1.6rem;
+  color: var(--primary);
+}
+
+#nav-bar {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.nav-button {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.nav-button:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.nav-button.small {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.6rem;
+  color: var(--info);
+}
+
+section {
+  padding: 2rem;
+  flex: 1;
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  background: white;
+  border-top: 1px solid #eee;
+  font-size: 0.8rem;
+}
+
+/* Auth forms */
+.auth-card {
+  max-width: 380px;
+  margin: 4rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.auth-card h2 {
+  margin-top: 0;
+  font-family: var(--font-title);
+  font-size: 1.4rem;
+  color: var(--primary);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.auth-form label {
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.auth-form input {
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+}
+
+.auth-form button {
+  margin-top: 0.6rem;
+}
+
+.small-text {
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.small-text a {
+  color: var(--info);
+  text-decoration: none;
+}
+
+/* Button styles */
+.primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary:hover {
+  background: var(--primary-light);
+  box-shadow: var(--shadow);
+}
+
+.secondary {
+  background: var(--primary-light);
+  color: var(--text);
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.secondary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Dashboard */
+.dashboard {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.score-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin: 1rem 0;
+}
+
+.score-card h3 {
+  margin: 0;
+  font-family: var(--font-title);
+}
+
+.score {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+  color: var(--primary);
+}
+
+.badge {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.quick-actions button {
+  flex: 1 1 150px;
+}
+
+/* Missions list */
+.missions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mission-card {
+  background: white;
+  padding: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mission-card.completed {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.mission-card button {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: var(--radius);
+}
+
+/* Scan results */
+#scan-results {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.product-card {
+  background: white;
+  padding: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.product-card h4 {
+  margin: 0 0 0.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.product-card .score-label {
+  font-weight: bold;
+}
+
+.loading {
+  margin-top: 1rem;
+  font-style: italic;
+  color: var(--primary);
+}
+
+/* Guide */
+.guide-result {
+  margin-top: 1rem;
+  background: white;
+  padding: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .score-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .badge {
+    margin-top: 0.6rem;
+  }
+  header nav {
+    flex-wrap: wrap;
+    gap: 0.2rem;
+  }
+}

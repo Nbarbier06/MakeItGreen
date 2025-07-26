@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Make It Green – Compagnon Écologique</title>
+    <!-- Google Fonts for typography -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Feather icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <!-- Tesseract.js for OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Make It Green</h1>
+      <nav id="nav-bar" style="display:none">
+        <button id="nav-dashboard" class="nav-button">Tableau de bord</button>
+        <button id="nav-scan" class="nav-button">Scanner</button>
+        <button id="nav-missions" class="nav-button">Missions</button>
+        <button id="nav-guide" class="nav-button">Recyclage</button>
+        <button id="logout-button" class="nav-button small">Déconnexion</button>
+      </nav>
+    </header>
+
+    <!-- Login / Signup Section -->
+    <section id="auth-section">
+      <div class="auth-card">
+        <h2>Connexion ou inscription</h2>
+        <div id="auth-forms">
+          <div id="login-form" class="auth-form">
+            <h3>Se connecter</h3>
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" />
+            <label for="login-password">Mot de passe</label>
+            <input type="password" id="login-password" />
+            <button id="login-btn" class="primary">Se connecter</button>
+            <p class="small-text">
+              Pas encore de compte ?
+              <a href="#" id="show-signup">Créer un compte</a>
+            </p>
+          </div>
+          <div id="signup-form" class="auth-form" style="display:none">
+            <h3>Créer un compte</h3>
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" />
+            <label for="signup-password">Mot de passe</label>
+            <input type="password" id="signup-password" />
+            <button id="signup-btn" class="primary">S'inscrire</button>
+            <p class="small-text">
+              Déjà inscrit ?
+              <a href="#" id="show-login">Se connecter</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard-section" style="display:none">
+      <div class="dashboard">
+        <h2>Bonjour <span id="user-email"></span> 👋</h2>
+        <div class="score-card">
+          <div>
+            <h3>Score écologique</h3>
+            <p id="eco-score" class="score">0</p>
+          </div>
+          <div class="badge" id="eco-badge"></div>
+        </div>
+        <div class="quick-actions">
+          <button id="go-scan" class="primary">Scanner un ticket</button>
+          <button id="go-missions" class="secondary">Voir les missions</button>
+          <button id="go-guide" class="secondary">Guide recyclage</button>
+        </div>
+        <div id="recent-activity"></div>
+      </div>
+    </section>
+
+    <!-- Scan Section -->
+    <section id="scan-section" style="display:none">
+      <h2>Scanner un ticket</h2>
+      <p>
+        Prenez en photo votre ticket de caisse ou sélectionnez une image afin
+        d'analyser vos achats. Les produits identifiés seront notés et des
+        alternatives vous seront proposées.
+      </p>
+      <input type="file" id="ticket-input" accept="image/*" />
+      <button id="scan-btn" class="primary">Analyser</button>
+      <div id="scan-loading" class="loading" style="display:none">
+        Analyse en cours...
+      </div>
+      <div id="scan-results"></div>
+    </section>
+
+    <!-- Missions Section -->
+    <section id="missions-section" style="display:none">
+      <h2>Missions écologiques</h2>
+      <p>Accomplissez des missions pour gagner des points et améliorer votre score.</p>
+      <div id="missions-list" class="missions-list"></div>
+    </section>
+
+    <!-- Guide Section -->
+    <section id="guide-section" style="display:none">
+      <h2>Guide de recyclage</h2>
+      <p>Recherchez un objet pour savoir comment le trier.</p>
+      <input type="text" id="guide-search" placeholder="Exemple: bouteille plastique" />
+      <button id="guide-search-btn" class="primary">Rechercher</button>
+      <div id="guide-result" class="guide-result"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Make It Green © 2025</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
