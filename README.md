@@ -1,9 +1,7 @@
 # MakeItGreen
 
-Test du mode Agent de ChatGPT
+### Test du mode Agent de ChatGPT
 
-
-Voici une **version améliorée et enrichie** du **document de cadrage** intégrant davantage de fonctionnalités innovantes, ainsi que la prise en compte de la base de données produits.
 
 ---
 
