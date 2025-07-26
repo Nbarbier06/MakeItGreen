@@ -13,6 +13,8 @@
     <script src="https://unpkg.com/feather-icons"></script>
     <!-- Tesseract.js for OCR -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
+    <!-- EmailJS for sending confirmation emails (requires configuration) -->
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -57,6 +59,11 @@
             </p>
           </div>
         </div>
+        <!-- Demo button allowing visitors to explore without créer un compte -->
+        <div class="demo-wrapper">
+          <p class="small-text">Envie de voir l’application en action sans créer de compte&nbsp;?</p>
+          <button id="demo-btn" class="secondary">Découvrir la démo</button>
+        </div>
       </div>
     </section>
 
@@ -65,9 +72,14 @@
       <div class="dashboard">
         <h2>Bonjour <span id="user-email"></span> 👋</h2>
         <div class="score-card">
+          <!-- Eco score and CO2 saved metrics -->
           <div>
             <h3>Score écologique</h3>
             <p id="eco-score" class="score">0</p>
+          </div>
+          <div>
+            <h3>CO₂ évité (kg)</h3>
+            <p id="co2-score" class="score">0.0</p>
           </div>
           <div class="badge" id="eco-badge"></div>
         </div>
@@ -88,8 +100,17 @@
         d'analyser vos achats. Les produits identifiés seront notés et des
         alternatives vous seront proposées.
       </p>
-      <input type="file" id="ticket-input" accept="image/*" />
-      <button id="scan-btn" class="primary">Analyser</button>
+      <!-- Bouton pour ouvrir la caméra -->
+      <div class="scan-controls">
+        <input type="file" id="ticket-input" accept="image/*" capture="environment" />
+        <button id="open-camera" class="secondary">Utiliser la caméra</button>
+        <button id="scan-btn" class="primary">Analyser</button>
+      </div>
+      <!-- Conteneur pour l'aperçu de la caméra et la capture -->
+      <div id="camera-container" class="camera-container" style="display:none">
+        <video id="camera-video" autoplay playsinline></video>
+        <button id="camera-capture" class="secondary">Prendre photo</button>
+      </div>
       <div id="scan-loading" class="loading" style="display:none">
         Analyse en cours...
       </div>

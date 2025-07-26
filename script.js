@@ -6,6 +6,8 @@
 */
 
 (function () {
+  // Demo mode flag
+  let demoMode = false;
   // Elements
   const authSection = document.getElementById('auth-section');
   const dashboardSection = document.getElementById('dashboard-section');
@@ -39,6 +41,12 @@
   const scanBtn = document.getElementById('scan-btn');
   const scanLoading = document.getElementById('scan-loading');
   const scanResults = document.getElementById('scan-results');
+  // Camera elements
+  const openCameraBtn = document.getElementById('open-camera');
+  const cameraContainer = document.getElementById('camera-container');
+  const cameraVideo = document.getElementById('camera-video');
+  const cameraCaptureBtn = document.getElementById('camera-capture');
+  let cameraStream;
   // Missions
   const missionsListElem = document.getElementById('missions-list');
   // Guide
@@ -48,11 +56,11 @@
 
   // Hard‑coded missions (could be fetched from a backend later)
   const missions = [
-    { id: 1, title: 'Apporter votre propre sac réutilisable', points: 10 },
-    { id: 2, title: 'Éteindre les lumières inutiles', points: 10 },
-    { id: 3, title: 'Utiliser un gobelet réutilisable', points: 15 },
-    { id: 4, title: 'Ne pas gaspiller de nourriture aujourd’hui', points: 20 },
-    { id: 5, title: 'Se déplacer à vélo ou à pied', points: 15 },
+    { id: 1, title: 'Apporter votre propre sac réutilisable', points: 10, co2: 0.1 },
+    { id: 2, title: 'Éteindre les lumières inutiles', points: 10, co2: 0.2 },
+    { id: 3, title: 'Utiliser un gobelet réutilisable', points: 15, co2: 0.15 },
+    { id: 4, title: 'Ne pas gaspiller de nourriture aujourd’hui', points: 20, co2: 0.3 },
+    { id: 5, title: 'Se déplacer à vélo ou à pied', points: 15, co2: 0.5 },
   ];
 
   // Simple recycling guide dictionary
@@ -64,6 +72,9 @@
     'pile': 'À apporter dans un point de collecte spécialisé (supermarché, déchetterie).',
     'textile': 'Apporter dans un point relais ou donner à une association.',
     'ampoule': 'À apporter en magasin ou en déchetterie (déchets dangereux).',
+    'lessive': 'À déposer dans le bac de recyclage des plastiques si l\'emballage est vide et propre.',
+    'dentifrice': 'Les tubes de dentifrice sont souvent à jeter dans les ordures ménagères (vérifiez localement).',
+    'savon': 'Les emballages carton se recyclent dans le bac bleu ; le savon lui-même est biodégradable.',
   };
 
   /**
@@ -124,6 +135,12 @@
     else if (user.score >= 50) badge = '🍀';
     else if (user.score >= 20) badge = '🌿';
     ecoBadgeElem.textContent = badge;
+    // update CO2 saved
+    const co2Elem = document.getElementById('co2-score');
+    if (co2Elem) {
+      const co2 = user.co2_saved || 0;
+      co2Elem.textContent = co2.toFixed(2);
+    }
     // update recent activity (missions completed)
     recentActivity.innerHTML = '';
     if (user.missions) {
@@ -160,9 +177,21 @@
         if (!user.missions) user.missions = {};
         user.missions[mission.id] = true;
         user.score = (user.score || 0) + mission.points;
+        // accumulate CO2 saved
+        user.co2_saved = (user.co2_saved || 0) + (mission.co2 || 0);
         saveUsers(users);
         refreshDashboard();
         populateMissions();
+        // animate badge and score on completion
+        ecoBadgeElem.classList.add('pulse');
+        ecoScoreElem.classList.add('pulse');
+        const co2Elem = document.getElementById('co2-score');
+        if (co2Elem) co2Elem.classList.add('pulse');
+        setTimeout(() => {
+          ecoBadgeElem.classList.remove('pulse');
+          ecoScoreElem.classList.remove('pulse');
+          if (co2Elem) co2Elem.classList.remove('pulse');
+        }, 600);
       });
       card.appendChild(title);
       card.appendChild(btn);
@@ -199,8 +228,14 @@
   signupBtn.addEventListener('click', () => {
     const email = document.getElementById('signup-email').value.trim().toLowerCase();
     const password = document.getElementById('signup-password').value;
+    // Email format verification
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !password) {
       alert('Veuillez renseigner email et mot de passe.');
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      alert('Adresse email invalide.');
       return;
     }
     const users = getUsers();
@@ -208,6 +243,7 @@
       alert('Un compte avec cet email existe déjà.');
       return;
     }
+    // Save new user
     users[email] = { password: password, score: 0, missions: {} };
     saveUsers(users);
     setCurrentUser(email);
@@ -216,6 +252,22 @@
     navBar.style.display = 'flex';
     refreshDashboard();
     showSection(dashboardSection);
+    // Send confirmation email if EmailJS configured
+    if (window.emailjs) {
+      const templateParams = { to_email: email };
+      try {
+        emailjs
+          .send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+          .then(() => {
+            alert('Merci ! Un email de confirmation vous a été envoyé.');
+          })
+          .catch((err) => {
+            console.warn('Erreur envoi email', err);
+          });
+      } catch (e) {
+        console.warn('EmailJS non configuré correctement', e);
+      }
+    }
   });
 
   // Switch between login and signup forms
@@ -255,6 +307,64 @@
   });
   goGuideBtn.addEventListener('click', () => showSection(guideSection));
 
+  // Camera handling: open camera and capture image to file input
+  if (openCameraBtn) {
+    openCameraBtn.addEventListener('click', async () => {
+      // Avoid re-initiating camera if already active
+      if (cameraContainer.style.display === 'flex') return;
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        cameraVideo.srcObject = cameraStream;
+        cameraContainer.style.display = 'flex';
+      } catch (err) {
+        console.error(err);
+        alert("Impossible d'accéder à la caméra.");
+      }
+    });
+  }
+  if (cameraCaptureBtn) {
+    cameraCaptureBtn.addEventListener('click', () => {
+      if (!cameraStream) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = cameraVideo.videoWidth;
+      canvas.height = cameraVideo.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        const file = new File([blob], 'capture.jpg', { type: 'image/jpeg' });
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        ticketInput.files = dt.files;
+        // stop camera and hide container
+        cameraStream.getTracks().forEach((t) => t.stop());
+        cameraContainer.style.display = 'none';
+      }, 'image/jpeg');
+    });
+  }
+
+  // Demo button: allow visitors to explore without inscription
+  const demoBtn = document.getElementById('demo-btn');
+  if (demoBtn) {
+    demoBtn.addEventListener('click', () => {
+      // Flag demo mode and create a sample account
+      demoMode = true;
+      const demoEmail = 'demo@example.com';
+      // Sample user with fictive score and missions
+      const users = getUsers();
+      users[demoEmail] = {
+        password: '',
+        score: 65,
+        missions: { 1: true, 2: false, 3: true, 4: false, 5: false },
+      };
+      saveUsers(users);
+      setCurrentUser(demoEmail);
+      navBar.style.display = 'flex';
+      refreshDashboard();
+      populateMissions();
+      showSection(dashboardSection);
+    });
+  }
+
   // Guide search
   guideSearchBtn.addEventListener('click', () => {
     const term = guideSearch.value.trim().toLowerCase();
@@ -275,10 +385,32 @@
    * Analyse the uploaded ticket using Tesseract.js.
    */
   scanBtn.addEventListener('click', async () => {
-    const file = ticketInput.files[0];
     scanResults.innerHTML = '';
+    // If in demo mode, show predetermined products without OCR
+    if (demoMode) {
+      const demoItems = ['bouteille plastique', 'shampoing', 'lingette', 'pomme', 'lessive', 'dentifrice', 'savon', 'café'];
+      scanLoading.style.display = 'block';
+      for (const item of demoItems) {
+        const card = await createProductCard(item);
+        scanResults.appendChild(card);
+      }
+      // Compute summary for demo items
+      const cards = scanResults.querySelectorAll('.product-card');
+      const summaryCounts = { bon: 0, moyen: 0, mauvais: 0, inconnu: 0 };
+      cards.forEach((c) => {
+        const v = c.dataset.verdict || 'inconnu';
+        if (summaryCounts[v] !== undefined) summaryCounts[v]++;
+      });
+      const summary = document.createElement('div');
+      summary.className = 'product-card';
+      summary.innerHTML = `<h4>Résumé du panier</h4><p>Bons : ${summaryCounts.bon} | Moyens : ${summaryCounts.moyen} | Mauvais : ${summaryCounts.mauvais} | Inconnus : ${summaryCounts.inconnu}</p>`;
+      scanResults.appendChild(summary);
+      scanLoading.style.display = 'none';
+      return;
+    }
+    const file = ticketInput.files[0];
     if (!file) {
-      alert('Veuillez sélectionner une image.');
+      alert('Veuillez sélectionner une image ou utiliser la caméra.');
       return;
     }
     scanLoading.style.display = 'block';
@@ -287,7 +419,8 @@
       const { data } = await worker.recognize(file, 'fra');
       await worker.terminate();
       scanLoading.style.display = 'none';
-      const lines = data.text.split('\n')
+      const lines = data.text
+        .split('\n')
         .map((l) => l.trim())
         .filter((l) => l.length > 2);
       if (lines.length === 0) {
@@ -300,10 +433,21 @@
         const card = await createProductCard(line);
         scanResults.appendChild(card);
       }
+      // After adding cards, compute summary of verdicts
+      const cards = scanResults.querySelectorAll('.product-card');
+      const summaryCounts = { bon: 0, moyen: 0, mauvais: 0, inconnu: 0 };
+      cards.forEach((c) => {
+        const v = c.dataset.verdict || 'inconnu';
+        if (summaryCounts[v] !== undefined) summaryCounts[v]++;
+      });
+      const summary = document.createElement('div');
+      summary.className = 'product-card';
+      summary.innerHTML = `<h4>Résumé du panier</h4><p>Bons : ${summaryCounts.bon} | Moyens : ${summaryCounts.moyen} | Mauvais : ${summaryCounts.mauvais} | Inconnus : ${summaryCounts.inconnu}</p>`;
+      scanResults.appendChild(summary);
     } catch (err) {
       console.error(err);
       scanLoading.style.display = 'none';
-      scanResults.innerHTML = '<p>Erreur lors de l\'analyse du ticket. Veuillez réessayer.</p>';
+      scanResults.innerHTML = "<p>Erreur lors de l'analyse du ticket. Veuillez réessayer.</p>";
     }
   });
 
@@ -325,7 +469,11 @@
     container.appendChild(altLine);
     container.appendChild(diyLine);
     // Try to fetch product from OFF
-    let grade = null;
+    let ecoGrade = null;
+    let nutriGrade = null;
+    let packaging = '';
+    let scoreEco = null;
+    let impactCO2 = null;
     try {
       const url = `https://world.openfoodfacts.org/api/v2/search?search_term=${encodeURIComponent(
         query
@@ -335,43 +483,60 @@
         const data = await res.json();
         if (data.products && data.products.length > 0) {
           const prod = data.products[0];
-          grade = prod.nutriscore_grade || prod.ecoscore_grade || null;
+          ecoGrade = prod.ecoscore_grade || prod.nutriscore_grade || null;
+          nutriGrade = prod.nutriscore_grade || null;
+          packaging = prod.packaging || prod.packaging_text || '';
+          // Estimate CO2 based on ecoscore grade (approximation)
+          if (ecoGrade) {
+            const g = ecoGrade.toLowerCase();
+            const co2Map = { a: 0.5, b: 1, c: 2, d: 3.5, e: 5 };
+            impactCO2 = co2Map[g] || null;
+          }
         }
       }
     } catch (e) {
       console.warn('API error', e);
     }
+    // Determine verdict (bon/moyen/mauvais)
     let verdict;
-    if (grade) {
-      const g = grade.toLowerCase();
+    if (ecoGrade) {
+      const g = ecoGrade.toLowerCase();
       if (['a', 'b'].includes(g)) verdict = 'bon';
       else if (g === 'c') verdict = 'moyen';
       else verdict = 'mauvais';
     } else {
       verdict = 'inconnu';
     }
-    scoreLine.textContent = `Score écologique : ${verdict}`;
+    // Display eco score and packaging info
+    const ecoText = ecoGrade ? `Éco‑score : ${ecoGrade.toUpperCase()}` : 'Éco‑score : N/A';
+    const packText = packaging ? `Emballage : ${packaging}` : '';
+    const co2Text = impactCO2 ? `CO₂ estimé : ${impactCO2.toFixed(1)} kg` : '';
+    scoreLine.innerHTML = `${ecoText}${packText ? ' | ' + packText : ''}${co2Text ? ' | ' + co2Text : ''}`;
     // Suggest alternatives
     if (verdict === 'mauvais') {
-      altLine.textContent = 'Alternative : choisissez un produit local ou biologique.';
+      altLine.textContent = 'Alternative : choisissez un produit local, biologique ou en vrac.';
     } else if (verdict === 'moyen') {
-      altLine.textContent = 'Alternative : préférez un produit en vrac ou sans emballage.';
+      altLine.textContent = 'Alternative : préférez un produit sans emballage ou fait maison.';
     } else if (verdict === 'bon') {
       altLine.textContent = 'Bonne nouvelle ! Ce produit est plutôt respectueux.';
     } else {
-      altLine.textContent = 'Alternative : optez pour des produits durables.';
+      altLine.textContent = 'Alternative : optez pour des produits durables.';
     }
-    // DIY suggestions based on category keywords
+    // DIY suggestions based on keywords
     const lower = query.toLowerCase();
-    if (lower.includes('détergent') || lower.includes('nettoyant')) {
+    if (lower.includes('détergent') || lower.includes('nettoyant') || lower.includes('lessive')) {
       diyLine.textContent = 'DIY : réalisez votre propre nettoyant multi‑usages avec du vinaigre blanc et du citron.';
-    } else if (lower.includes('shampoing')) {
+    } else if (lower.includes('shampoing') || lower.includes('savon')) {
       diyLine.textContent = 'DIY : préparez un shampoing naturel avec du savon de Marseille et des huiles essentielles.';
     } else if (lower.includes('lingette') || lower.includes('essuie')) {
       diyLine.textContent = 'DIY : utilisez des lingettes lavables en tissu au lieu de jetables.';
+    } else if (lower.includes('dentifrice')) {
+      diyLine.textContent = 'DIY : réalisez un dentifrice maison avec de l\'argile et de l\'huile de coco.';
     } else {
       diyLine.textContent = '';
     }
+    // Store verdict on container for summary
+    container.dataset.verdict = verdict;
     return container;
   }
 
@@ -389,6 +554,15 @@
     }
     // Render icons when ready
     if (window.feather) feather.replace();
+
+    // Initialize EmailJS if configured (replace YOUR_PUBLIC_KEY)
+    if (window.emailjs) {
+      try {
+        emailjs.init('YOUR_PUBLIC_KEY');
+      } catch (e) {
+        console.warn('EmailJS init error', e);
+      }
+    }
   }
 
   window.addEventListener('DOMContentLoaded', init);
