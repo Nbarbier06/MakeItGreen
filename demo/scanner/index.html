@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Make It Green – Démo Scanner</title>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Feather icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    <!-- Tesseract.js -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.4.1/dist/email.min.js"></script>
+    <!-- Relative CSS path from demo/scanner folder -->
+    <link rel="stylesheet" href="../../style.css" />
+  </head>
+  <body>
+    <!-- Copy of the main markup (same as index.html) -->
+    <header>
+      <h1>Make It Green</h1>
+      <nav id="nav-bar" style="display:none">
+        <button id="nav-dashboard" class="nav-button">Tableau de bord</button>
+        <button id="nav-scan" class="nav-button">Scanner</button>
+        <button id="nav-missions" class="nav-button">Missions</button>
+        <button id="nav-guide" class="nav-button">Recyclage</button>
+        <button id="logout-button" class="nav-button small">Déconnexion</button>
+      </nav>
+    </header>
+
+    <!-- Authentication forms and demo button -->
+    <section id="auth-section">
+      <div class="auth-card">
+        <h2>Connexion ou inscription</h2>
+        <div id="auth-forms">
+          <div id="login-form" class="auth-form">
+            <h3>Se connecter</h3>
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" />
+            <label for="login-password">Mot de passe</label>
+            <input type="password" id="login-password" />
+            <button id="login-btn" class="primary">Se connecter</button>
+            <p class="small-text">
+              Pas encore de compte ?
+              <a href="#" id="show-signup">Créer un compte</a>
+            </p>
+          </div>
+          <div id="signup-form" class="auth-form" style="display:none">
+            <h3>Créer un compte</h3>
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" />
+            <label for="signup-password">Mot de passe</label>
+            <input type="password" id="signup-password" />
+            <button id="signup-btn" class="primary">S'inscrire</button>
+            <p class="small-text">
+              Déjà inscrit ?
+              <a href="#" id="show-login">Se connecter</a>
+            </p>
+          </div>
+        </div>
+        <div class="demo-wrapper">
+          <p class="small-text">Envie de voir l’application en action sans créer de compte ?</p>
+          <button id="demo-btn" class="secondary">Découvrir la démo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard-section" style="display:none">
+      <div class="dashboard">
+        <h2>Bonjour <span id="user-email"></span> 👋</h2>
+        <div class="score-card">
+          <div>
+            <h3>Score écologique</h3>
+            <p id="eco-score" class="score">0</p>
+          </div>
+          <div>
+            <h3>CO₂ évité (kg)</h3>
+            <p id="co2-score" class="score">0</p>
+          </div>
+          <div>
+            <h3>Badge</h3>
+            <p id="eco-badge" class="score">🌱</p>
+          </div>
+        </div>
+        <div id="recent-activity"></div>
+        <div class="quick-actions">
+          <button id="go-scan" class="primary">Scanner un ticket</button>
+          <button id="go-missions" class="primary">Voir les missions</button>
+          <button id="go-guide" class="primary">Guide recyclage</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scan Section -->
+    <section id="scan-section" style="display:none">
+      <h2>Scanner un ticket</h2>
+      <p>
+        Prenez en photo votre ticket de caisse ou sélectionnez une image afin d'analyser vos achats. Les produits identifiés seront notés et des alternatives vous seront proposées.
+      </p>
+      <p class="note">Pour de meilleurs résultats, utilisez une image nette et bien éclairée. Si vous scannez un code‑barres, veillez à ce qu'il soit entier et lisible afin de permettre l'identification du produit.</p>
+      <input type="file" id="ticket-input" accept="image/*" capture="environment" />
+      <div class="scan-controls">
+        <button id="open-camera" class="secondary">Utiliser la caméra</button>
+        <button id="scan-btn" class="primary">Analyser</button>
+      </div>
+      <div id="camera-container" style="display:none">
+        <video id="camera-video" autoplay></video>
+        <button id="camera-capture" class="primary">Capturer</button>
+      </div>
+      <p id="scan-loading" style="display:none">Analyse en cours...</p>
+      <div id="scan-results"></div>
+    </section>
+
+    <!-- Missions Section -->
+    <section id="missions-section" style="display:none">
+      <h2>Missions</h2>
+      <div id="missions-list"></div>
+    </section>
+
+    <!-- Recycling Guide Section -->
+    <section id="guide-section" style="display:none">
+      <h2>Guide de Recyclage</h2>
+      <input type="text" id="guide-search" placeholder="Rechercher un objet..." />
+      <button id="guide-search-btn" class="primary">Chercher</button>
+      <div id="guide-result"></div>
+    </section>
+
+    <!-- Include main script with correct relative path -->
+    <script src="../../script.js"></script>
+    <!-- Automatically trigger demo mode and display the scanner page -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const demoBtn = document.getElementById('demo-btn');
+        if (demoBtn) {
+          demoBtn.click();
+          // After enabling demo mode, explicitly show the scanner page
+          setTimeout(() => {
+            const navScan = document.getElementById('nav-scan');
+            if (navScan) navScan.click();
+          }, 200);
+        }
+      });
+    </script>
+  </body>
+</html>
