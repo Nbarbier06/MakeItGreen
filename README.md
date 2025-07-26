@@ -1,99 +1,39 @@
-# MakeItGreen
+# Eco App – MVP
 
-### Test du mode Agent de ChatGPT
+This repository contains a **minimum viable product (MVP)** for an ecological web application.
 
+The goal of the project is to provide citizens with a simple tool to understand the ecological
+impact of their purchases, discover sustainable alternatives, participate in eco‑friendly
+missions and challenges, and learn how to recycle everyday products.  The project is
+organised as a monorepo with two main folders:
 
----
+* **client** – a React application that offers the user interface.  It implements
+  authentication pages, a dashboard, ticket scanning, product recommendations, mission
+  tracking and a recycling guide.  The UI follows the design guidelines defined in the
+  project brief (soft colours, rounded buttons, accessible typography and micro‑animations).
+* **server** – a Node.js/Express backend that exposes a handful of REST endpoints for the
+  MVP.  It handles user registration, login, OCR processing via [Tesseract.js], basic
+  product scoring using the [Open Food Facts](https://openfoodfacts.org) API, mission
+  management, and recycling information.  For simplicity the current implementation
+  stores data in memory – a real application would replace this with a database.
 
-## 1. **Contexte et Vision**
+The application is designed to be **responsive** (mobile first) and easily extendable.
+Before running the project you must install dependencies in both the client and server
+subfolders.  See the `README.md` files inside each subfolder for instructions.
 
-La transition écologique nécessite des outils concrets permettant aux citoyens de **comprendre leur impact, changer leurs habitudes et accéder facilement à des alternatives durables**.
-Cette application vise à devenir **un compagnon écologique du quotidien**, combinant **simplicité, utilité et motivation**.
+## Quick start
 
----
+```bash
+# Install dependencies
+cd server && npm install
+cd ../client && npm install
 
-## 2. **Objectifs du Projet**
+# Run backend
+cd ../server && npm start
 
-* **Informer** : donner des conseils contextualisés sur les achats et comportements.
-* **Accompagner** : proposer des alternatives écologiques, locales ou DIY.
-* **Motiver** : encourager l’adoption d’actions durables grâce à des défis et récompenses.
-* **Connecter** : favoriser l’économie circulaire et les initiatives locales.
+# In another terminal run frontend
+cd ../client && npm start
+```
 
----
-
-## 3. **Public Cible**
-
-* **Citoyens sensibles** à l’écologie, souhaitant des solutions concrètes.
-* **Jeunes adultes**, familles et étudiants cherchant à réduire leurs dépenses.
-* **Collectivités locales** intéressées par des outils de sensibilisation.
-
----
-
-## 4. **Fonctionnalités Clés**
-
-| Priorité | Fonctionnalité                                | Description                                                              | Valeur                                                      |
-| -------- | --------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------- |
-| **MVP**  | **OCR tickets de caisse**                     | Scan via smartphone → extraction produits → analyse écologique           | Identifier achats polluants, suggérer alternatives durables |
-| **MVP**  | **Recommandations DIY**                       | Recettes/solutions maison pour remplacer produits industriels            | Économies + réduction produits chimiques                    |
-| **MVP**  | **Guide recyclage intelligent**               | Recherche par produit ou scan emballage pour savoir où le jeter          | Réduction des erreurs de tri                                |
-| **MVP**  | **Défis écologiques gamifiés**                | Missions simples (valider par checkbox/photo) + points                   | Motivation continue                                         |
-| **V2**   | **Comparateur produits**                      | Comparer impact écologique (CO₂, emballage, origine) entre deux produits | Consommation éclairée                                       |
-| **V2**   | **Carte des points verts**                    | Localisation recycleries, composteurs, magasins vrac                     | Favoriser achats et gestes locaux                           |
-| **V2**   | **Historique & suivi de progrès**             | Visualisation des efforts : CO₂ économisé, score vert                    | Engagement renforcé                                         |
-| **V3**   | **Troc et échanges communautaires**           | Plateforme pour donner/échanger objets entre utilisateurs                | Favorise économie circulaire                                |
-| **V3**   | **Recommandations locales & circuits courts** | Liste producteurs locaux, AMAP, coopératives                             | Réduction empreinte transport                               |
-| **V3**   | **Analyse alimentation**                      | Détection produits ultra-transformés, alternatives plus saines           | Bénéfice santé + écologie                                   |
-
----
-
-## 5. **Nouveaux Modules Fonctionnels (Idées complémentaires)**
-
-* 📸 **Scan de code-barres produits** (même logique que Yuka mais pour écologie) → affichage impact environnemental.
-* 🛍️ **Wishlist écoresponsable** → alternatives écologiques à des produits courants.
-* ♻️ **Mode "Zéro Déchet"** → liste de courses optimisée pour limiter les emballages.
-* 💧 **Simulateur d’impact** → montre la différence entre un comportement classique et un geste écologique.
-* 🏅 **Défis collaboratifs avec collectivités** → classements par ville/quartier avec récompenses locales (bons d’achat, réduction sur transports).
-
----
-
-## 6. **Base de Données Produits (Nécessaire pour OCR et Comparateur)**
-
-### 📌 **Besoins identifiés :**
-
-* Identification des produits via **texte OCR** ou **EAN code-barres**.
-* Informations à stocker : nom, catégorie, origine, type emballage, score environnemental, alternatives proposées.
-
-### 📌 **Sources possibles :**
-
-* **Open Food Facts (OFF)** : base open source mondiale avec produits alimentaires (EAN, ingrédients, scores Nutri et Eco-Score).
-* **Open Beauty Facts** : pour cosmétiques.
-* **Crowdsourcing utilisateurs** : ajout manuel de produits non référencés.
-* **Partenariats** : magasins bio, marques locales.
-
-### 📌 **Approche :**
-
-1. **MVP** → intégration **Open Food Facts** + enrichissement interne progressif.
-2. **Phase 2** → création **base propriétaire** avec ajout utilisateurs + validation modérateurs.
-
----
-
-## 7. **Architecture Fonctionnelle (vue simplifiée)**
-
-* **Frontend** : SPA (React / Vue.js) mobile-first.
-* **Backend** : API REST (Node.js / Express).
-* **Base de données** : PostgreSQL + connecteur vers Open Food Facts.
-* **OCR** : Tesseract.js (côté client) + pré-traitement serveur.
-* **Stockage images** : S3 ou équivalent.
-* **Notifications** : envoi via Firebase ou service email.
-
----
-
-## 8. **Analyse des Risques**
-
-| Risque                              | Impact | Mitigation                               |
-| ----------------------------------- | ------ | ---------------------------------------- |
-| OCR imprécis sur certains tickets   | Moyen  | Ajout validation manuelle utilisateur    |
-| Base de données produits incomplète | Élevé  | Connexion OFF + crowdsourcing            |
-| Adoption faible                     | Moyen  | Gamification + partenariats locaux       |
-| RGPD et vie privée                  | Élevé  | Stockage minimal, consentement explicite |
-| Maintenance contenu DIY             | Moyen  | Intégration wiki communautaire           |
+By default the backend runs on `http://localhost:3001` and the React development server
+proxies API calls there (see `client/package.json`).

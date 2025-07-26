@@ -1,0 +1,226 @@
+/* Global styles and design tokens */
+:root {
+  --color-primary: #4CAF82; /* Vert Sauge */
+  --color-primary-light: #A8E6A3; /* Vert Menthe clair */
+  --color-secondary: #5D4037; /* Brun Terre */
+  --color-accent: #FFD54F; /* Jaune doux */
+  --color-info: #4DA6FF; /* Bleu clair éco */
+  --color-bg: #FAFAF7; /* Blanc cassé */
+  --font-title: 'Poppins', sans-serif;
+  --font-text: 'Inter', sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-text);
+  background-color: var(--color-bg);
+  color: var(--color-secondary);
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-title);
+  margin-top: 0;
+  color: var(--color-secondary);
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar a {
+  color: #fff;
+  margin-right: 1rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navbar a:hover {
+  color: var(--color-accent);
+}
+
+.navbar button {
+  background: none;
+  border: 1px solid #fff;
+  border-radius: 20px;
+  padding: 0.3rem 0.8rem;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.navbar button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Forms */
+.form-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.form-group button {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 0.6rem;
+  border: none;
+  background-color: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.form-group button:hover {
+  background-color: var(--color-primary-light);
+}
+
+/* Dashboard & Cards */
+.dashboard {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.card-title {
+  font-family: var(--font-title);
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.score-label {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.score-label.vert {
+  background-color: #4CAF50;
+}
+.score-label.orange {
+  background-color: #FF9800;
+}
+.score-label.rouge {
+  background-color: #F44336;
+}
+.score-label.gris {
+  background-color: #9E9E9E;
+}
+
+/* Mission list */
+.mission-list {
+  list-style: none;
+  padding: 0;
+}
+
+.mission-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.mission-item button {
+  background-color: var(--color-primary);
+  border: none;
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.mission-item button:disabled {
+  background-color: #ccc;
+  cursor: default;
+}
+
+.mission-item button:hover:not(:disabled) {
+  background-color: var(--color-primary-light);
+}
+
+/* Scan page */
+.scan-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.scan-results {
+  margin-top: 1rem;
+}
+
+.product-item {
+  border-bottom: 1px solid #eee;
+  padding: 0.5rem 0;
+}
+
+/* Recycle guide */
+.recycle-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.recycle-result {
+  margin-top: 1rem;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
