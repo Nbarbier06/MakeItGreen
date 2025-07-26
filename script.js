@@ -456,6 +456,26 @@
    * @param {string} query Product name extracted from receipt
    */
   async function createProductCard(query) {
+    // Helper: check if the query looks like a barcode (digits only, length 8‑14)
+    const isBarcode = (str) => {
+      const cleaned = str.replace(/\s+/g, '');
+      return /^\d{8,14}$/.test(cleaned);
+    };
+
+    // Helper: fetch product by barcode using Open Food Facts v0 API
+    async function fetchProductByBarcode(code) {
+      try {
+        const url = `https://world.openfoodfacts.org/api/v0/product/${code}.json`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 1 && data.product) return data.product;
+        }
+      } catch (err) {
+        console.warn('Error fetching by barcode', err);
+      }
+      return null;
+    }
     const container = document.createElement('div');
     container.className = 'product-card';
     const title = document.createElement('h4');
@@ -468,30 +488,39 @@
     container.appendChild(scoreLine);
     container.appendChild(altLine);
     container.appendChild(diyLine);
-    // Try to fetch product from OFF
+    // Try to fetch product from Open Food Facts
     let ecoGrade = null;
     let nutriGrade = null;
     let packaging = '';
-    let scoreEco = null;
     let impactCO2 = null;
     try {
-      const url = `https://world.openfoodfacts.org/api/v2/search?search_term=${encodeURIComponent(
-        query
-      )}&page_size=1`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.products && data.products.length > 0) {
-          const prod = data.products[0];
-          ecoGrade = prod.ecoscore_grade || prod.nutriscore_grade || null;
-          nutriGrade = prod.nutriscore_grade || null;
-          packaging = prod.packaging || prod.packaging_text || '';
-          // Estimate CO2 based on ecoscore grade (approximation)
-          if (ecoGrade) {
-            const g = ecoGrade.toLowerCase();
-            const co2Map = { a: 0.5, b: 1, c: 2, d: 3.5, e: 5 };
-            impactCO2 = co2Map[g] || null;
+      // If the query is a probable barcode, fetch by barcode
+      let productData = null;
+      if (isBarcode(query)) {
+        productData = await fetchProductByBarcode(query.replace(/\s+/g, ''));
+      }
+      if (!productData) {
+        // Fallback: search by name using API v2
+        const searchUrl = `https://world.openfoodfacts.org/api/v2/search?search_term=${encodeURIComponent(
+          query
+        )}&page_size=1`;
+        const res = await fetch(searchUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.products && data.products.length > 0) {
+            productData = data.products[0];
           }
+        }
+      }
+      if (productData) {
+        ecoGrade = productData.ecoscore_grade || productData.nutriscore_grade || null;
+        nutriGrade = productData.nutriscore_grade || null;
+        packaging = productData.packaging || productData.packaging_text || '';
+        // Estimate CO2 based on ecoscore grade (approximation)
+        if (ecoGrade) {
+          const g = ecoGrade.toLowerCase();
+          const co2Map = { a: 0.5, b: 1, c: 2, d: 3.5, e: 5 };
+          impactCO2 = co2Map[g] || null;
         }
       }
     } catch (e) {

@@ -331,6 +331,14 @@ footer {
   color: var(--primary);
 }
 
+/* Small explanatory notes for forms and scan section */
+.note {
+  font-size: 0.85rem;
+  color: var(--text);
+  opacity: 0.8;
+  margin-bottom: 1rem;
+}
+
 /* Guide */
 .guide-result {
   margin-top: 1rem;
